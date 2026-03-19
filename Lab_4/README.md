@@ -1,5 +1,4 @@
 
-```markdown
 # AI Scheduling & Optimization Algorithms
 
 This repository contains the implementation of two Artificial Intelligence search strategies—**Greedy Search** and **A* (A-Star) Search**—applied to a complex task scheduling problem. 
