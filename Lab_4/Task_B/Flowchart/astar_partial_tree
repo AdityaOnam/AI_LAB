@@ -1,0 +1,41 @@
+// Partial A* Search Tree (Level 1)
+digraph {
+	fontname=Helvetica rankdir=TB size="10,12"
+	node [fontname=Helvetica fontsize=11 rounded=true shape=box style=filled]
+	edge [fontname=Helvetica fontsize=10]
+	root [label="ROOT STATE (Day 0)
+Completed: None
+Menu Cost: $0
+g(n)=0 | h(n)=0
+f(n) = 0" fillcolor="#f8f9fa"]
+	child_good [label="CHILD STATE (Day 1)
+Schedule: [A1, A2]
+Menu: 1 TC (Cost $1)
+Remaining Tasks: 9 (Min 5 days)
+g(n) = 1 day * $1 = $1
+h(n) = 5 days * $1 = $5
+f(n) = 6" fillcolor="#d4edda"]
+	child_bad [label="CHILD STATE (Day 1)
+Schedule: [A1, A4]
+Menu: 1 TC, 1 PM (Cost $2)
+Remaining Tasks: 9 (Min 5 days)
+g(n) = 1 day * $2 = $2
+h(n) = 5 days * $2 = $10
+f(n) = 12" fillcolor="#f8d7da"]
+	child_single [label="CHILD STATE (Day 1)
+Schedule: [A1]
+Menu: 1 TC (Cost $1)
+Remaining Tasks: 10 (Min 5 days)
+g(n) = 1 day * $1 = $1
+h(n) = 5 days * $1 = $5
+f(n) = 6" fillcolor="#fff3cd"]
+	note [label="... 12 more branches
+generated just for Day 1 ...
+
+A* will pull the green node
+next because f(n)=6 is the lowest." fillcolor=white shape=note style="dashed, filled"]
+	root -> child_good [label=" Branch: A1 & A2" color=darkgreen fontcolor=darkgreen]
+	root -> child_bad [label=" Branch: A1 & A4" color=red fontcolor=red]
+	root -> child_single [label=" Branch: A1 only" color=orange fontcolor=orange]
+	root -> note [arrowhead=none style=dotted]
+}

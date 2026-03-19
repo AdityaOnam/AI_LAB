@@ -1,0 +1,53 @@
+// A* Search for Optimal Schedule
+digraph {
+	fontname=Helvetica rankdir=TB size="10,12"
+	Start [label="Start
+Initialize Priority Queue (Open List)" fillcolor="#87CEEB" shape=oval style=filled]
+	Success [label="GOAL REACHED
+Output Optimal Schedule
+Menus, Costs, Days, States Explored
+Compare with Greedy Output" fillcolor="#90EE90" shape=oval style=filled]
+	Fail [label="Queue Empty
+(No valid schedule possible)" fillcolor="#FFB6C1" shape=oval style=filled]
+	InitState [label="Create Initial State:
+- 0 Tasks Scheduled
+- states_explored = 0
+- Calculate initial h(n)
+- g(n) = 0
+Push to Priority Queue" fillcolor="#F0F8FF" shape=box style=filled]
+	CheckQueue [label="Is Priority Queue
+Empty?" fillcolor="#FFDAB9" shape=diamond style=filled]
+	PopState [label="Pop State with lowest f(n)
+Increment states_explored counter" fillcolor="#E6E6FA" shape=box style=filled]
+	CheckGoal [label="Are ALL tasks scheduled
+in this State?" fillcolor="#FFDAB9" shape=diamond style=filled]
+	FindAvailable [label="Find all tasks with In-Degree == 0
+(Based on tasks completed in THIS state)" shape=box]
+	GenCombos [label="Generate all valid daily combinations
+of available tasks
+(Must respect group-size constraints)" shape=box]
+	LoopCombos [label="For each valid daily combination:" fillcolor="#FFFFE0" shape=hexagon style=filled]
+	CalcChild [label="Create New Child State:
+1. Assign tasks to new Day
+2. Calculate Day's Food Cost
+3. g(n) = parent_g + daily_cost
+4. Update remaining tasks
+5. Calculate new h(n)
+6. f(n) = g(n) + h(n)" shape=box]
+	PushChild [label="Push Child State to Priority Queue
+(Optionally check Closed List to avoid
+redundant state variations)" shape=box]
+	Start -> InitState
+	InitState -> CheckQueue
+	CheckQueue -> Fail [label=" YES" fontcolor=red fontname="Helvetica-Bold"]
+	CheckQueue -> PopState [label=" NO"]
+	PopState -> CheckGoal
+	CheckGoal -> Success [label=" YES (Optimal Found!)" fontcolor=green fontname="Helvetica-Bold"]
+	CheckGoal -> FindAvailable [label=" NO (Keep searching)"]
+	FindAvailable -> GenCombos
+	GenCombos -> LoopCombos
+	LoopCombos -> CalcChild [label=" Next Combo"]
+	CalcChild -> PushChild
+	PushChild -> LoopCombos [label=" Loop"]
+	LoopCombos -> CheckQueue [label=" Done with Combos (Next State)" color=blue]
+}

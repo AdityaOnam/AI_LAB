@@ -1,9 +1,10 @@
 import collections
 import networkx as nx
 import matplotlib.pyplot as plt
-import collections
 
-# ... [Keep your existing parse_input, calculate_depths, and greedy_schedule functions here] ...
+# ==========================================
+# 1. GRAPH VISUALIZATION MODULE
+# ==========================================
 
 def get_topological_layers(graph, base_in_degree, assignments):
     """
@@ -32,15 +33,11 @@ def get_topological_layers(graph, base_in_degree, assignments):
         
     return layers
 
-
 def visualize_graph(graph, assignments, in_degree):
     """
     Draws a Top-Down hierarchical representation of the DAG, 
     while forcing entirely separate task chains to stay apart visually.
     """
-    import networkx as nx
-    import matplotlib.pyplot as plt
-    
     G = nx.DiGraph()
     
     # Get the proper top-down layers
@@ -55,7 +52,7 @@ def visualize_graph(graph, assignments, in_degree):
             
     plt.figure(figsize=(14, 8)) # Made slightly wider to accommodate spacing
     
-    # --- NEW LOGIC: Separate Isolated Components ---
+    # --- LOGIC: Separate Isolated Components ---
     pos = {}
     x_offset = 0
     padding = 1.5  # Adjust this value to increase/decrease the gap between chains
@@ -68,7 +65,7 @@ def visualize_graph(graph, assignments, in_degree):
         # 1. Calculate layered layout just for this specific family
         sub_pos = nx.multipartite_layout(sub_G, subset_key="layer")
         
-        # 2. Rotate to Top-Down
+        # 2. Rotate to Top-Down (Swap X and Y, invert new Y)
         rotated_pos = {n: (y, -x) for n, (x, y) in sub_pos.items()}
         
         # 3. Find the width of this family so we know how much to shift it
@@ -105,7 +102,10 @@ def visualize_graph(graph, assignments, in_degree):
     plt.axis("off")
     plt.tight_layout()
     plt.show()
-    
+
+# ==========================================
+# 2. PARSING MODULE
+# ==========================================
 
 def parse_input(input_lines):
     """
@@ -131,8 +131,6 @@ def parse_input(input_lines):
         # Parse Assignments (Format: A <id> <in1> <in2> <outcome> <food>)
         elif parts[0] == 'A':
             a_id = 'A' + parts[1]
-            # Handling variable number of inputs before the outcome and food
-            # Based on the sample, it's A id in1 in2 outcome food
             in1, in2 = int(parts[2]), int(parts[3])
             outcome = int(parts[4])
             food = parts[5]
@@ -154,7 +152,6 @@ def parse_input(input_lines):
                 
     return assignments, graph, in_degree, food_costs, group_size
 
-
 def calculate_depths(graph, assignments):
     """
     Calculates the longest path (dependency depth) from each node to a leaf node.
@@ -175,6 +172,9 @@ def calculate_depths(graph, assignments):
         dfs(a_id)
     return depths
 
+# ==========================================
+# 3. SCHEDULING MODULE
+# ==========================================
 
 def greedy_schedule(assignments, graph, base_in_degree, food_costs, group_size, strategy_name):
     """
@@ -246,18 +246,15 @@ def greedy_schedule(assignments, graph, base_in_degree, food_costs, group_size, 
                     
     return schedule, total_cost
 
-
 def run_all_strategies(input_text):
     """
     Main driver function to execute and compare all implemented strategies.
     """
     lines = input_text.strip().split('\n')
     assignments, graph, in_degree, food_costs, group_size = parse_input(lines)
-    lines = input_text.strip().split('\n')
-    assignments, graph, in_degree, food_costs, group_size = parse_input(lines)
     
-   # Pass in_degree as the third argument
-    print("Generating Graph Visualization... (Close the window to continue to the scheduling output)")
+    # Pass in_degree as the third argument for proper Top-Down layering
+    print("\nGenerating Graph Visualization... (Close the window to continue to the scheduling output)")
     visualize_graph(graph, assignments, in_degree)
     
     strategies = [
@@ -291,8 +288,12 @@ def run_all_strategies(input_text):
         print(f">>> Total Food Cost: {total_cost}\n")
 
 
-# Sample Input Data from Page 4 of the Assignment PDF
-sample_input = """
+# ==========================================
+# 4. TEST CASES & MENU DRIVER
+# ==========================================
+
+# Test Case 1: The original sample from the PDF (11 assignments)
+test_case_1 = """
 C TC 1
 C DF 1
 C PM 1
@@ -311,5 +312,69 @@ A 10 3 12 16 TC
 A 11 15 16 17 DF
 """
 
+# Test Case 2: A custom hybrid tree with distinct isolated branches (12 assignments)
+test_case_2 = """
+C PZ 2
+C BZ 3
+C SD 1
+C CF 1
+G 3
+A 1 1 2 10 PZ
+A 2 2 3 11 BZ
+A 3 4 5 12 SD
+A 4 10 11 13 CF
+A 5 11 12 14 PZ
+A 6 13 14 15 BZ
+A 7 6 7 16 SD
+A 8 16 8 17 CF
+A 9 15 17 18 PZ
+A 10 9 1 19 BZ
+A 11 18 19 20 SD
+A 12 20 2 21 CF
+"""
+
+# Test Case 3: A strict vertical bottleneck with expensive foods and no group advantage (10 assignments)
+test_case_3 = """
+C AP 2
+C BN 1
+C OR 3
+G 1
+A 1 1 2 5 AP
+A 2 3 4 6 BN
+A 3 5 6 7 OR
+A 4 7 8 9 AP
+A 5 9 10 11 BN
+A 6 11 12 13 OR
+A 7 13 14 15 AP
+A 8 15 16 17 BN
+A 9 17 18 19 OR
+A 10 19 20 21 AP
+"""
+
 if __name__ == "__main__":
-    run_all_strategies(sample_input)
+    cases = {
+        "1": test_case_1,
+        "2": test_case_2,
+        "3": test_case_3
+    }
+    
+    print("\n" + "="*50)
+    print(" AI SCHEDULING ASSIGNMENT - TASK 1 DRIVER")
+    print("="*50)
+    
+    while True:
+        print("\nSelect a Test Case to execute:")
+        print("  [1] Test Case 1 (PDF Sample - 11 tasks, Group: 2)")
+        print("  [2] Test Case 2 (Hybrid Tree - 12 tasks, Group: 3)")
+        print("  [3] Test Case 3 (Deep Bottleneck - 10 tasks, Group: 1)")
+        print("  [0] Exit")
+        
+        choice = input("\nEnter your choice (0-3): ").strip()
+        
+        if choice == '0':
+            print("Exiting program...")
+            break
+        elif choice in cases:
+            run_all_strategies(cases[choice])
+        else:
+            print("Invalid selection. Please enter 1, 2, 3, or 0.")
