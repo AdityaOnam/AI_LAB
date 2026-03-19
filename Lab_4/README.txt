@@ -1,5 +1,3 @@
-
-```markdown
 # AI Scheduling & Optimization Algorithms
 
 This repository contains the implementation of two Artificial Intelligence search strategies—**Greedy Search** and **A* (A-Star) Search**—applied to a complex task scheduling problem. 
@@ -74,6 +72,3 @@ Both algorithms are tested against three distinct graph topologies to ensure rob
 1. **Instance 1 (Hybrid Tree):** The baseline test (11 tasks, Group Size: 2) with mixed constraints.
 2. **Instance 2 (Linear Pipeline):** A strict sequential depth test.
 3. **Instance 3 (Wide Tree):** A highly parallel layout designed to stress-test the A* "Global Max Menu" cost optimization vs. Greedy speed.
-```
-
-Let me know if you need to add any specific student names, ID numbers, or course codes to the top of this file!
